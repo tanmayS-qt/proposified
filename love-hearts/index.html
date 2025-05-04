@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Special Memories</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap');
+        
+        :root {
+            --primary-color: #f5f5f5;
+            --accent-color: #ff4b4b;
+            --text-color: #333;
+            --polaroid-bg: #fff;
+            --polaroid-shadow: rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+        
+        /* Intro Animation */
+        .intro-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: black;
+            z-index: 1000;
+            transition: opacity 1s ease-out;
+        }
+        
+        .intro-text {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 300;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 1.5s ease;
+        }
+        
+        .intro-text.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .intro-text.fade-out {
+            opacity: 0;
+            transform: scale(1.2);
+        }
+        
+        /* Main Content */
+        .main-content {
+            opacity: 0;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            transition: opacity 2s ease-in;
+        }
+        
+        .gallery-header {
+            text-align: center;
+            margin: 2rem 0 4rem;
+        }
+        
+        .gallery-title {
+            font-size: 2.5rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+        
+        .gallery-subtitle {
+            font-weight: 300;
+            color: #666;
+        }
+        
+        /* Gallery Grid */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2.5rem;
+        }
+        
+        /* Polaroid Style */
+        .polaroid {
+            background: var(--polaroid-bg);
+            padding: 1rem 1rem 2.5rem;
+            box-shadow: 0 6px 12px var(--polaroid-shadow);
+            transform: rotate(var(--rotation));
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .polaroid:hover {
+            transform: rotate(var(--rotation)) scale(1.05);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .polaroid img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            margin-bottom: 1rem;
+            background-color: #eee; /* Placeholder background */
+        }
+        
+        .polaroid .caption {
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 300;
+        }
+        
+        /* Video Player */
+        .video-container {
+            grid-column: span 2;
+            aspect-ratio: 16/9;
+            background: var(--polaroid-bg);
+            padding: 1.5rem;
+            box-shadow: 0 6px 15px var(--polaroid-shadow);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .video-player {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background-color: #000;
+            margin-bottom: 1rem;
+        }
+        
+        .video-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+        }
+        
+        .play-button, .volume-button, .fullscreen-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-color);
+            font-size: 1.2rem;
+            transition: color 0.2s;
+        }
+        
+        .play-button:hover, .volume-button:hover, .fullscreen-button:hover {
+            color: var(--accent-color);
+        }
+        
+        .progress-container {
+            flex-grow: 1;
+            height: 5px;
+            background-color: #ddd;
+            margin: 0 1rem;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: var(--accent-color);
+            border-radius: 5px;
+            width: 0%;
+        }
+        
+        .video-playlist {
+            display: flex;
+            margin-top: 1rem;
+            gap: 0.5rem;
+        }
+        
+        .video-selector {
+            background: #f0f0f0;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            color: var(--text-color);
+        }
+        
+        .video-selector:hover {
+            background: #e0e0e0;
+        }
+        
+        .video-selector.active {
+            background: var(--accent-color);
+            color: white;
+        }
+        
+        /* Heart Button Styles */
+        .heart-button-container {
+            text-align: center;
+            margin: 4rem 0;
+            padding: 1rem;
+        }
+        
+        .heart-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(255, 75, 75, 0.3);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .heart-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(255, 75, 75, 0.4);
+        }
+        
+        .heart-button:active {
+            transform: translateY(1px);
+        }
+        
+        .heart-button .heart-icon {
+            margin-right: 10px;
+            font-size: 1.3rem;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        @media (max-width: 768px) {
+            .gallery {
+                grid-template-columns: 1fr;
+            }
+            
+            .video-container {
+                grid-column: span 1;
+            }
+            
+            .intro-text {
+                font-size: 1.8rem;
+                padding: 0 2rem;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Intro Animation -->
+    <div class="intro-container" id="intro">
+        <div class="intro-text" id="introText"></div>
+    </div>
+    
+    <!-- Main Content (Initially Hidden) -->
+    <div class="main-content" id="mainContent">
+        <header class="gallery-header">
+            <h1 class="gallery-title">Special Moments</h1>
+            <p class="gallery-subtitle">Collection of our favorite memories</p>
+        </header>
+        
+        <div class="gallery">
+            <!-- Polaroid 1 -->
+            <div class="polaroid" style="--rotation: -2deg;">
+                <img src="./imgs/pic1.jpg" alt="Placeholder image">
+                <div class="caption">I wont ever leave you and will hug you like this whenever you need it and will make sure to not make a single cm gap between us like this photo💑🎈</div>
+            </div>
+            
+            <!-- Video Player (Center) -->
+            <div class="video-container">
+                <video class="video-player" id="videoPlayer">
+                    <source src="./videos/edit1.mp4" type="video/mp4" id="videoSource">
+                    Your browser does not support the video tag.
+                </video>
+                <div class="video-controls">
+                    <button class="play-button" id="playButton">▶</button>
+                    <div class="progress-container" id="progressContainer">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+                    <button class="volume-button" id="volumeButton">🔊</button>
+                    <button class="fullscreen-button" id="fullscreenButton">⛶</button>
+                </div>
+                <div class="video-playlist">
+                    <button class="video-selector active" data-src="./videos/edit1.mp4">Video 1</button>
+                    <button class="video-selector" data-src="./videos/edit2.mp4">Video 2</button>
+                </div>
+            </div>
+            
+            <!-- Polaroid 3 -->
+            <div class="polaroid" style="--rotation: 1deg;">
+                <img src="/imgs/pic2.jpg" alt="Placeholder image">
+                <div class="caption">i will look at you like i have fallen in love with you just a second before even when we would be in our death bed 💖</div>
+            </div>
+            
+            <!-- Polaroid 4 -->
+            <div class="polaroid" style="--rotation: -1deg;">
+                <img src="/imgs/pic3.jpg" alt="Placeholder image">
+                <div class="caption">hum dono saath me lagte to cutussss hi hai manna to padega 💫👑</div>
+            </div>
+            
+            <!-- Polaroid 5 -->
+            <div class="polaroid" style="--rotation: 2deg;">
+                <img src="/imgs/pic4.jpg" alt="Placeholder image">
+                <div class="caption">haaye rabba nazar na lage 'meri laado' 🎉❤️</div>
+            </div>  
+        </div>
+        
+        <!-- Heart Button Section -->
+        <div class="heart-button-container">
+            <a href="heart.html" class="heart-button">
+                <span class="heart-icon">❤️</span>
+                <span>See My Heart</span>
+            </a>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Intro messages
+            const messages = [
+                "Here are some of our favorite memories",
+            ];
+            const introText = document.getElementById('introText');
+            const intro = document.getElementById('intro');
+            const mainContent = document.getElementById('mainContent');
+            
+            // Start the intro sequence
+            let messageIndex = 0;
+            function showMessage() {
+                if (messageIndex < messages.length) {
+                    introText.textContent = messages[messageIndex];
+                    introText.className = 'intro-text active';
+                    
+                    setTimeout(() => {
+                        introText.className = 'intro-text fade-out';
+                        
+                        setTimeout(() => {
+                            messageIndex++;
+                            if (messageIndex < messages.length) {
+                                showMessage();
+                            } else {
+                                // After all messages, show main content
+                                setTimeout(() => {
+                                    intro.style.opacity = '0';
+                                    setTimeout(() => {
+                                        intro.style.display = 'none';
+                                        mainContent.style.opacity = '1';
+                                    }, 1000);
+                                }, 1000);
+                            }
+                        }, 1500);
+                    }, 3000);
+                }
+            }
+            showMessage();
+            
+            // Video player controls
+            const videoPlayer = document.getElementById('videoPlayer');
+            const playButton = document.getElementById('playButton');
+            const volumeButton = document.getElementById('volumeButton');
+            const fullscreenButton = document.getElementById('fullscreenButton');
+            const progressContainer = document.getElementById('progressContainer');
+            const progressBar = document.getElementById('progressBar');
+            const videoSource = document.getElementById('videoSource');
+            const videoSelectors = document.querySelectorAll('.video-selector');
+            
+            // Play/pause
+            playButton.addEventListener('click', () => {
+                if (videoPlayer.paused) {
+                    videoPlayer.play();
+                    playButton.textContent = '⏸';
+                } else {
+                    videoPlayer.pause();
+                    playButton.textContent = '▶';
+                }
+            });
+            
+            // Volume
+            volumeButton.addEventListener('click', () => {
+                if (videoPlayer.muted) {
+                    videoPlayer.muted = false;
+                    volumeButton.textContent = '🔊';
+                } else {
+                    videoPlayer.muted = true;
+                    volumeButton.textContent = '🔇';
+                }
+            });
+            
+            // Fullscreen
+            fullscreenButton.addEventListener('click', () => {
+                if (videoPlayer.requestFullscreen) {
+                    videoPlayer.requestFullscreen();
+                } else if (videoPlayer.webkitRequestFullscreen) {
+                    videoPlayer.webkitRequestFullscreen();
+                } else if (videoPlayer.msRequestFullscreen) {
+                    videoPlayer.msRequestFullscreen();
+                }
+            });
+            
+            // Progress bar
+            videoPlayer.addEventListener('timeupdate', () => {
+                const percentage = (videoPlayer.currentTime / videoPlayer.duration) * 100;
+                progressBar.style.width = `${percentage}%`;
+            });
+            
+            progressContainer.addEventListener('click', (e) => {
+                const pos = (e.pageX - progressContainer.getBoundingClientRect().left) / progressContainer.offsetWidth;
+                videoPlayer.currentTime = pos * videoPlayer.duration;
+            });
+            
+            // Video selector functionality
+            videoSelectors.forEach(selector => {
+                selector.addEventListener('click', function() {
+                    // Update active state
+                    videoSelectors.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Get the video source
+                    const videoSrc = this.getAttribute('data-src');
+                    
+                    // Store current playback position and playing state
+                    const wasPlaying = !videoPlayer.paused;
+                    
+                    // Update video source
+                    videoPlayer.src = videoSrc;
+                    
+                    // Reset progress bar
+                    progressBar.style.width = '0%';
+                    
+                    // Reload the video
+                    videoPlayer.load();
+                    
+                    // If it was playing, continue playing the new video
+                    if (wasPlaying) {
+                        videoPlayer.play();
+                        playButton.textContent = '⏸';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
