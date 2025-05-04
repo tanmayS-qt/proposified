@@ -91,7 +91,7 @@ const Playlist = () => {
         </div>
         <div className="text-center mt-16">
           <a 
-            href="https://i-love-you-tarun.vercel.app/" 
+            href="https://love-hearts.vercel.app/" 
             target="_blank" 
             rel="noopener noreferrer"
             className="mt-6 inline-block px-8 py-3 bg-white text-[#E373FF] rounded-full hover:bg-gray-100 transition-all transform hover:scale-105 shadow-md hover:shadow-lg font-semibold"
